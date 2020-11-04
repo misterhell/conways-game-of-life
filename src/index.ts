@@ -6,11 +6,12 @@ import Game from './Game';
 
 const drawerParams: IDrawerParams = {
     size: {
-        x: 10,
-        y: 10,
-    }
+        x: 600,
+        y: 400,
+    },
+    elementSize: 100
 }
 
 const drawer: IDrawer = new Canvas(drawerParams);
 
-const game = new Game();
+const game = new Game(drawer);

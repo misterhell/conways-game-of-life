@@ -1,5 +1,6 @@
 export interface IDrawerParams {
-    size: IDrawerSize
+    size: IDrawerSize,
+    elementSize: number
 }
 
 

@@ -9,9 +9,9 @@ const drawerParams: IDrawerParams = {
         x: 600,
         y: 400,
     },
-    elementSize: 100
+    elementSize: 5
 }
 
 const drawer: IDrawer = new Canvas(drawerParams);
 
-const game = new Game(drawer);
+const game = new Game(drawer, 50, 20, {});

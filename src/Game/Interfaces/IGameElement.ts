@@ -1,6 +1,6 @@
 export interface IGameElement {
-    isAlive: boolean,
-    color?: string,
+    isAlive: boolean
+    color?: string
     generation: number
 }
 

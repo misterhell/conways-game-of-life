@@ -1,6 +1,6 @@
-import { IGameElement } from '../../Game/IGameElement';
+import { IGameElement } from '../../Game/Interfaces/IGameElement'
 import { IDrawer } from '../IDrawer'
-import { IDrawerParams, IDrawerSize } from '../IDrawerParams';
+import { IDrawerParams, IDrawerSize } from '../IDrawerParams'
 
 class Canvas implements IDrawer {
 
@@ -23,7 +23,7 @@ class Canvas implements IDrawer {
 
     init() {
         try {
-            this.setCtxParams();
+            this.setCtxParams()
 
             return true
         } catch (e) {
@@ -36,7 +36,7 @@ class Canvas implements IDrawer {
         // TODO: move params to params parser
         this.ctx.imageSmoothingEnabled = true
         this.ctx.lineWidth = 0.1
-        this.ctx.strokeStyle = "#000000";
+        this.ctx.strokeStyle = "#000000"
     }
 
     insertCanvasElement() {
@@ -48,7 +48,7 @@ class Canvas implements IDrawer {
 
         document.body.appendChild(canvas)
 
-        return canvas;
+        return canvas
     }
 
     drawGrid() {
@@ -56,8 +56,8 @@ class Canvas implements IDrawer {
         const xLines = this.getGridLinesCount(x)
         const yLines = this.getGridLinesCount(y)
 
-        // begin path needed for not to repeating path between frames
-        this.ctx.beginPath();
+        // begin path needed for not to repeating path between frames (steps)
+        this.ctx.beginPath()
         for (let i = 0; i < xLines; i++) {
             this.ctx.moveTo(i * this.elementSize, 0)
             this.ctx.lineTo(i * this.elementSize, y)
@@ -66,7 +66,7 @@ class Canvas implements IDrawer {
             this.ctx.moveTo(0, i * this.elementSize)
             this.ctx.lineTo(x, i * this.elementSize)
         }
-        this.ctx.stroke();
+        this.ctx.stroke()
     }
 
     getGridLinesCount(axisLength: number) {
@@ -84,18 +84,19 @@ class Canvas implements IDrawer {
     }
 
     drawElements(elements: IGameElement[][]) {
-        const s = this.elementSize;
+        const s = this.elementSize
 
         elements.forEach((line: IGameElement[], lineNum: number) => {
             line.forEach((elem: IGameElement, elemNum: number) => {
                 if (elem.isAlive) {
-                    this.ctx.fillStyle = elem.color || '#000000';
+                    this.ctx.fillStyle = elem.color || '#000000'
+
                     this.ctx.fillRect(
                         elemNum * this.elementSize,
                         lineNum * s,
                         s,
                         s
-                    );
+                    )
                 }
             })
         })

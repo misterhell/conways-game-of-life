@@ -1,42 +1,56 @@
 import { IDrawer } from "../Drawers/IDrawer"
-import GameElement from "./GameElement";
+import GameControls from "./GameControls"
+import GameElement from "./GameElement"
+import { IGame } from "./Interfaces/IGame"
+// import { IGame } from "./Interfaces/IGame";
 
 
-class Game {
+class Game implements IGame {
     drawer: IDrawer
-    speed: number 
+    speed: number
     percentageFilling: number
+
+    isPaused: boolean
 
     elements: GameElement[][]
 
-    constructor(drawer: IDrawer, speed: number = 150, percentageFilling: number = 20, control?: {}) {
+    control: GameControls
+
+    constructor(drawer: IDrawer, speed: number = 150, percentageFilling: number = 20) {
+        // default values
+        this.isPaused = true
         this.drawer = drawer
         this.speed = speed
         this.percentageFilling = percentageFilling
 
+        // controls
+        this.control = new GameControls(this)
+    
+        // random elements filling
         this.elements = this.generateElements()
 
         // first draw
         this.drawElements();
         setInterval(() => {
-            this.updateElements()
-            this.drawElements()
+            if (!this.isPaused) {
+                this.stepForward()
+            }
         }, speed)
+
         console.log('Game created!')
     }
 
+    oneStepForward() {
+        this.stepForward()
+    }
 
-    generateElements(): GameElement[][] {
-        const elements: GameElement[][] = []
+    protected stepForward() {
+        this.updateElements()
+        this.drawElements()
+    }
 
-        // testing elements
-        // const elements = [
-        //     [new GameElement({ isAlive: false, generation: 0 }), new GameElement({ isAlive: true, generation: 0 }), new GameElement({ isAlive: false, generation: 0 })],
-        //     [new GameElement({ isAlive: true, generation: 0 }), new GameElement({ isAlive: false, generation: 0 }), new GameElement({ isAlive: true, generation: 0 })],
-        //     [new GameElement({ isAlive: false, generation: 0 }), new GameElement({ isAlive: true, generation: 0 }), new GameElement({ isAlive: false, generation: 0 })]
-        // ]
-
-        const
+    protected generateElements(): GameElement[][] {
+        const elements: GameElement[][] = [],
             horizontalCount: number = this.drawer.size.x / this.drawer.elementSize,
             verticalCount: number = this.drawer.size.y / this.drawer.elementSize
 
@@ -47,7 +61,7 @@ class Game {
         return elements
     }
 
-    generateRowOfElements(horizontalCount: number): GameElement[] {
+    protected generateRowOfElements(horizontalCount: number): GameElement[] {
         const row: GameElement[] = [];
 
         for (let i = 0; i < horizontalCount; i++) {
@@ -57,7 +71,7 @@ class Game {
         return row;
     }
 
-    updateElements(): void {
+    protected updateElements(): void {
         const currentElements: GameElement[][] = this.elements;
         const nextGenerationElements: GameElement[][] = [];
         // going row by row
@@ -76,7 +90,7 @@ class Game {
         this.elements = nextGenerationElements;
     }
 
-    nextStepElement(isLiveCell: boolean, row: number, elemI: number): GameElement {
+    protected nextStepElement(isLiveCell: boolean, row: number, elemI: number): GameElement {
         // take -1 row -1 index, -1 row current index, -1 row +1 index
         // take  this row -1 index, this row +1 index
         // take  +1 row -1 index, +1 row index, +1 row +1 index
@@ -134,7 +148,7 @@ class Game {
     }
 
 
-    drawElements(): void {
+    private drawElements(): void {
         this.drawer.draw(this.elements)
     }
 

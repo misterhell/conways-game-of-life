@@ -1,4 +1,4 @@
-import { IGameElement } from "./IGameElement";
+import { IGameElement } from "./Interfaces/IGameElement"
 
 
 class GameElement implements IGameElement {

@@ -1,5 +1,5 @@
 import { IDrawerSize } from "./IDrawerParams"
-import { IGameElement } from '../Game/IGameElement'
+import { IGameElement } from '../Game/Interfaces/IGameElement'
 
 export interface IDrawer {
     draw: (elements: IGameElement[][]) => void

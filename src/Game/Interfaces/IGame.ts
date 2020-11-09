@@ -1,5 +1,6 @@
 export interface IGame {
-    isPaused: boolean
+    isPaused: boolean,
+    withControl: boolean,
     oneStepForward: () => void
 }
 

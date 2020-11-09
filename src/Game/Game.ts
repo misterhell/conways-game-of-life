@@ -1,7 +1,9 @@
 import { IDrawer } from "../Drawers/IDrawer"
 import GameControls from "./GameControls"
 import GameElement from "./GameElement"
+import GameStatistic from "./GameStatistic"
 import { IGame } from "./Interfaces/IGame"
+import { IGameElement } from "./Interfaces/IGameElement"
 // import { IGame } from "./Interfaces/IGame";
 
 
@@ -12,8 +14,12 @@ class Game implements IGame {
 
     isPaused: boolean
 
-    elements: GameElement[][]
+    elements: IGameElement[][]
 
+    withStatistic: boolean
+    statistic: GameStatistic
+
+    withControl: boolean
     control: GameControls
 
     constructor(drawer: IDrawer, speed: number = 150, percentageFilling: number = 20) {
@@ -24,7 +30,12 @@ class Game implements IGame {
         this.percentageFilling = percentageFilling
 
         // controls
+        this.withControl = true
         this.control = new GameControls(this)
+
+        // statistic
+        this.withStatistic = true
+        this.statistic = new GameStatistic(this)
     
         // random elements filling
         this.elements = this.generateElements()
@@ -40,8 +51,19 @@ class Game implements IGame {
         console.log('Game created!')
     }
 
+    restart() {
+        this.isPaused = true
+        this.elements = this.generateElements()
+        this.drawElements()
+
+        this.control.refresh()
+        this.statistic.refresh()
+    }
+
     oneStepForward() {
         this.stepForward()
+        this.control.update()
+        this.statistic.update()
     }
 
     protected stepForward() {

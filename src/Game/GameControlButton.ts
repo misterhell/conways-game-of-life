@@ -2,11 +2,13 @@
 
 class GameControlButton {
 
+    private defaultTitle: string
+
     title: string
     element: HTMLElement
 
     constructor(initTitle: string, params: {} = {}) {
-        this.title = initTitle
+        this.defaultTitle = this.title = initTitle
         this.element = this.createHtmlElement()
         this.handleParams(params)
     }
@@ -21,7 +23,7 @@ class GameControlButton {
         }
     }
 
-    private createHtmlElement () {
+    private createHtmlElement() {
         const btn = this.appendAttributes(document.createElement('button'))
         btn.innerText = this.title
         return btn
@@ -35,6 +37,11 @@ class GameControlButton {
 
     addClickEvent(eventHandler: () => void) {
         this.element.addEventListener('click', eventHandler)
+    }
+
+    refresh() {
+        this.title = this.defaultTitle
+        this.element.innerText = this.title
     }
 }
 

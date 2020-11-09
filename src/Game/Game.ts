@@ -36,12 +36,13 @@ class Game implements IGame {
         // statistic
         this.withStatistic = true
         this.statistic = new GameStatistic(this)
-    
+
         // random elements filling
         this.elements = this.generateElements()
 
         // first draw
         this.drawElements();
+        this.updateUI();
         setInterval(() => {
             if (!this.isPaused) {
                 this.stepForward()
@@ -62,13 +63,17 @@ class Game implements IGame {
 
     oneStepForward() {
         this.stepForward()
-        this.control.update()
-        this.statistic.update()
     }
 
     protected stepForward() {
         this.updateElements()
         this.drawElements()
+        this.updateUI()
+    }
+
+    protected updateUI() {
+        this.control.update()
+        this.statistic.update()
     }
 
     protected generateElements(): GameElement[][] {

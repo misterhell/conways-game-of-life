@@ -7,8 +7,13 @@ import { IGameUI } from "./Interfaces/IGameUI";
 class GameStatistic implements IGameUI {
     game: Game
 
+    element: HTMLElement
+
     constructor(game: Game) {
         this.game = game
+
+        this.element = document.createElement('div')
+        document.body.appendChild(this.element)
     }
 
     refresh() {
@@ -16,7 +21,7 @@ class GameStatistic implements IGameUI {
     }
 
     update() {
-
+        this.element.innerHTML = `Alive cells: ${this.countOfLiveElements} | Biggest generation: ${this.maxGeneration}`
     }
 
     get countOfLiveElements() {

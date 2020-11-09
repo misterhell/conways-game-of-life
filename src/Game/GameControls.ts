@@ -10,13 +10,16 @@ class GameControls implements IGameControl, IGameUI {
 
     private buttons: GameControlButton[] = []
 
+    private panel: HTMLElement
+
+
     constructor(game: IGame) {
         this.game = game
+        this.panel = document.createElement('div');
 
         if (game.withControl) {
             this.insertHtmlElements()
         }
-        this.restartGame()
     }
 
     oneStepForward(): void {
@@ -28,35 +31,38 @@ class GameControls implements IGameControl, IGameUI {
     }
 
     restartGame(): boolean {
-        // TODO
+        this.game.restart()
+
         return true
     }
 
     changeFillPercentage(): number {
-        // this.game.pe
+        // this.game.
         return 20
     }
 
-    get panelClasses() {
-        return {
-            panel: 'game-panel',
-            button: 'game-control__button'
-        }
-    }
 
     private createControlPanel(): HTMLElement {
-        const panel: HTMLElement = document.createElement('div');
+        this.addStylesToPanel()
+        this.addButtonsToPane()
 
-        panel.classList.add(this.panelClasses.panel)
+        return this.panel;
+    }
 
+    private addStylesToPanel() {
+        this.panel.style.display = 'flex'
+        this.panel.style.justifyContent = 'space-between'
+        this.panel.style.width = `${this.game.drawer.size.x.toString()}px`
+    }
+
+    private addButtonsToPane() {
         this.buttons = [
             this.createPauseButton(),
-            this.createNextStepButton() 
+            this.createNextStepButton(),
+            this.createRestartButton()
         ];
 
-        this.buttons.forEach((btn: GameControlButton) => panel.appendChild(btn.element))
-
-        return panel;
+        this.buttons.forEach((btn: GameControlButton) => this.panel?.appendChild(btn.element))
     }
 
     private insertHtmlElements() {
@@ -73,22 +79,27 @@ class GameControls implements IGameControl, IGameUI {
     }
 
     private createPauseButton() {
-        return new GameControlButton('Click for start', {
+        return new GameControlButton('Click to start', {
             click: (e: any) => {
                 const toggleResult: boolean = this.togglePause()
                 if (e.target) {
-                    e.target.innerText = toggleResult ? 'Click for unpause' : 'Click for pause'
+                    e.target.innerText = `Click to ${toggleResult ? 'unpause' : 'pause'}`
                 }
             }
         })
     }
 
-
-    refresh () {
-
+    private createRestartButton() {
+        return new GameControlButton('Restart', {
+            click: () => this.restartGame()
+        })
     }
 
-    update () {
+    refresh() {
+        this.buttons.forEach((btn: GameControlButton) => btn.refresh())
+    }
+
+    update() {
 
     }
 }

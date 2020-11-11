@@ -24,7 +24,7 @@ class GameStatistic implements IGameUI {
         this.element.innerHTML = `Alive cells: ${this.countOfLiveElements} | Biggest generation: ${this.maxGeneration}`
     }
 
-    get countOfLiveElements() {
+    get countOfLiveElements(): number {
         return this.game.elements.reduce((counter: number, elementsRow: IGameElement[]) => {
             const rowCount = elementsRow.reduce((rowCounter: number, element: IGameElement) => {
                 return rowCounter += element.isAlive ? 1 : 0
@@ -33,14 +33,18 @@ class GameStatistic implements IGameUI {
         }, 0)
     }
 
-    get maxGeneration() {
-        return this.game.elements.reduce((counter: number, elementsRow: IGameElement[]) => {
-            return elementsRow.reduce((rowCounter: number, element: IGameElement) => {
-                return element.generation > counter
-                    ? element.generation
-                    : counter
-            }, 0);
-        }, 0)
+    get maxGeneration(): number {
+        let currentNumber = 0
+
+        for (let r = 0; r < this.game.elements.length; r++) {
+            for (let i = 0; i < this.game.elements[r].length; i++) {
+                if (this.game.elements[r][i].generation > currentNumber) {
+                    currentNumber = this.game.elements[r][i].generation
+                }
+            }
+        }
+
+        return currentNumber
     }
 }
 

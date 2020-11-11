@@ -4,7 +4,7 @@ import GameElement from "./GameElement"
 import GameStatistic from "./GameStatistic"
 import { IGame } from "./Interfaces/IGame"
 import { IGameElement } from "./Interfaces/IGameElement"
-// import { IGame } from "./Interfaces/IGame";
+// import { IGame } from "./Interfaces/IGame"
 
 
 class Game implements IGame {
@@ -41,8 +41,8 @@ class Game implements IGame {
         this.elements = this.generateElements()
 
         // first draw
-        this.drawElements();
-        this.updateUI();
+        this.drawElements()
+        this.updateUI()
         setInterval(() => {
             if (!this.isPaused) {
                 this.stepForward()
@@ -89,32 +89,32 @@ class Game implements IGame {
     }
 
     protected generateRowOfElements(horizontalCount: number): GameElement[] {
-        const row: GameElement[] = [];
+        const row: GameElement[] = []
 
         for (let i = 0; i < horizontalCount; i++) {
             row.push(new GameElement({ isAlive: ((Math.random() * 100) < 20 /** 20% field filling */), generation: 0 }))
         }
 
-        return row;
+        return row
     }
 
     protected updateElements(): void {
-        const currentElements: GameElement[][] = this.elements;
-        const nextGenerationElements: GameElement[][] = [];
+        const currentElements: GameElement[][] = this.elements,
+            nextGenerationElements: GameElement[][] = []
         // going row by row
         for (let row: number = 0; row < currentElements.length; row++) {
             // going throw elements
             for (let elemI: number = 0; elemI < currentElements[row].length; elemI++) {
-                const cell: GameElement = currentElements[row][elemI];
+                const cell: GameElement = currentElements[row][elemI]
 
                 if (!nextGenerationElements[row]) {
-                    nextGenerationElements[row] = [];
+                    nextGenerationElements[row] = []
                 }
                 nextGenerationElements[row][elemI] = this.nextStepElement(cell.isAlive, row, elemI)
             }
         }
 
-        this.elements = nextGenerationElements;
+        this.elements = nextGenerationElements
     }
 
     protected nextStepElement(isLiveCell: boolean, row: number, elemI: number): GameElement {
@@ -122,46 +122,56 @@ class Game implements IGame {
         // take  this row -1 index, this row +1 index
         // take  +1 row -1 index, +1 row index, +1 row +1 index
 
-        const getLiveNum = (element: GameElement): number => {
-            return element.isAlive ? 1 : 0;
-        }
+        const getElementsFromRowByIndexes = (row: number, indexesArray: number[]): GameElement[] => {
+            const elements: GameElement[] = []
 
-        const getLiveInRowByIndex =
-            (row: number, elemI: number, selfRow: boolean = false): number => {
-                let countOfLive = 0;
-                if (this.elements[row]) {
-                    const prevElemI = elemI - 1,
-                        nextElemI = elemI + 1
+            for (let i = 0; i < indexesArray.length; i++) {
+                const elemIndex = indexesArray[i]
 
-                    // do not count self row and self coordinate
-                    if (!selfRow) {
-                        countOfLive += getLiveNum(this.elements[row][elemI])
-                    }
-                    if (this.elements[row][nextElemI]) {
-                        countOfLive += getLiveNum(this.elements[row][nextElemI])
-                    }
-                    if (this.elements[row][prevElemI]) {
-                        countOfLive += getLiveNum(this.elements[row][prevElemI])
-                    }
+                if (this.elements[row] && this.elements[row][elemIndex]) {
+                    elements.push(this.elements[row][elemIndex])
                 }
-
-                return countOfLive
             }
 
-        let liveNeighbors: number =
-            [
-                getLiveInRowByIndex(row - 1, elemI),
-                getLiveInRowByIndex(row, elemI, true),
-                getLiveInRowByIndex(row + 1, elemI),
-            ]
-                .reduce((c, v) => c + v, 0)
+            return elements
+        }
+
+
+        const getAllNeighbors = (row: number, elemI: number): GameElement[] => {
+            const neighbors: GameElement[] = []
+            const prev = elemI - 1,
+                curr = elemI,
+                next = elemI + 1
+
+            neighbors.push(...getElementsFromRowByIndexes(row - 1, [prev, curr, next]))
+            neighbors.push(...getElementsFromRowByIndexes(row, [prev, next]))
+            neighbors.push(...getElementsFromRowByIndexes(row + 1, [prev, curr, next]))
+
+            return neighbors
+        }
+
+        const getLiveNum = (element: GameElement): number => element.isAlive ? 1 : 0
+
+
+        const allNeighbors: GameElement[] = getAllNeighbors(row, elemI),
+            liveNeighborsCount: number = allNeighbors.reduce((sum, elem) => sum + getLiveNum(elem), 0),
+            prevStepElement: GameElement = this.elements[row][elemI]
+
+        const liveNeighborsGeneration: number = allNeighbors.reduce((max, elem) => {
+            if (!elem.isAlive) {
+                return max
+            }
+            return max < elem.generation
+                ? elem.generation
+                : max
+        }, 0)
 
         const isLive = (nCount: number, isLiveCell: boolean): boolean => {
-            // Any live cell with two or three live neighbours survives.
+            // Any live cell with two or three live neighbors survives.
             if (isLiveCell && (nCount == 2 || nCount == 3)) {
                 return true
             }
-            // Any dead cell with three live neighbours becomes a live cell
+            // Any dead cell with three live neighbors becomes a live cell
             else if (!isLiveCell && nCount == 3) {
                 return true
             }
@@ -171,7 +181,14 @@ class Game implements IGame {
             }
         }
 
-        return new GameElement({ isAlive: isLive(liveNeighbors, isLiveCell), generation: 0 })
+        const getGeneration = (prevEl: GameElement, maxGen: number): number => {
+            return prevEl.isAlive ? prevEl.generation : maxGen + 1
+        }
+
+        return new GameElement({
+            isAlive: isLive(liveNeighborsCount, isLiveCell),
+            generation: getGeneration(prevStepElement, liveNeighborsGeneration)
+        })
     }
 
 

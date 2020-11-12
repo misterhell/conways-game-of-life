@@ -89,7 +89,11 @@ class Canvas implements IDrawer {
         elements.forEach((line: IGameElement[], lineNum: number) => {
             line.forEach((elem: IGameElement, elemNum: number) => {
                 if (elem.isAlive) {
-                    this.ctx.fillStyle = elem.color || '#000000'
+                    const num = elem.generation,
+                        b = num % 256,
+                        g = ((num-b)/256) % 256,
+                        r = ((num - b)/256**2) -  g/256 
+                    this.ctx.fillStyle = `rgb(${r}, ${g}, ${b})` 
 
                     this.ctx.fillRect(
                         elemNum * this.elementSize,

@@ -47,7 +47,7 @@ class Game implements IGame {
             if (!this.isPaused) {
                 this.stepForward()
             }
-        }, speed)
+        }, this.speed)
 
         console.log('Game created!')
     }
